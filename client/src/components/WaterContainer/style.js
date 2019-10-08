@@ -16,11 +16,10 @@ export const StyledWaterContainer = styled.div`
   }
 `;
 
-export const Water = styled.div`
+export const Water = styled(motion.div)`
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -100%);
   width: 300px;
   height: 300px;
 `;
@@ -30,9 +29,7 @@ export const Wave = styled.div`
   width: 100%;
   height: 100%;
 
-  &:before,
-  &:after {
-    content: '';
+  > div {
     position: absolute;
     width: 200%;
     height: 200%;
@@ -41,13 +38,13 @@ export const Wave = styled.div`
     transform: translate(-50%, -75%);
   }
 
-  &:before {
+  > div:first-of-type {
     background: rgba(255, 255, 255, 1);
     border-radius: 45%;
     animation: animate 7s linear infinite;
   }
 
-  &:after {
+  > div:last-of-type {
     background: rgba(255, 255, 255, 0.5);
     border-radius: 40%;
     animation: animate 15s linear infinite;
@@ -63,38 +60,37 @@ export const Wave = styled.div`
   }
 `;
 
-export const WrapperHandle = styled.div`
-  div:first-of-type {
-    position: absolute;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 150px;
-    left: 0;
+export const Handle = styled(motion.div)`
+  cursor: grab;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  &:first-of-type {
+    width: 60px;
+    right: 100%;
+    margin-right: -5px;
     top: 0;
   }
 
-  div:last-of-type {
-    position: absolute;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 40px;
-    left: -27%;
+  &:last-of-type {
+    width: 60px;
+    right: 100%;
+    margin-right: -5px;
     bottom: 0px;
   }
-`;
-
-export const Handle = styled(motion.div)`
-  cursor: grab;
 
   > div {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
     > p {
       letter-spacing: 0.2em;
     }
   }
+
   > span {
     width: 10px;
     height: 1px;

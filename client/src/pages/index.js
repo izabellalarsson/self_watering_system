@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Plant from '../../src/components/Plant';
 import WaterContainer from '../../src/components/WaterContainer';
-
 const Header = styled.h1`
   font-size: 72px;
   letter-spacing: 0.1em;
@@ -24,13 +23,19 @@ const StyledIndex = styled.div`
   }
 `;
 
-const Index = () => {
+const Index = ({ socket }) => {
+  const [waterLevel, setWaterLevel] = useState(10);
+  useEffect(() => {
+    socket.on('percent', data => {
+      setWaterLevel(data);
+    });
+  }, []);
   return (
     <StyledIndex>
       <Header>Time to water your plant?</Header>
       <section>
         <Plant />
-        <WaterContainer />
+        <WaterContainer waterLevel={waterLevel} socket={socket} />
       </section>
     </StyledIndex>
   );
