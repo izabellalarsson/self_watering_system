@@ -44,6 +44,7 @@ board.on('ready', () => {
   const pump = new five.Pin(3);
   const sensor = new five.Sensor({ pin: 'A0', type: 'analog' });
   let isWatering = false;
+  let manualWatering = false;
 
   pump.low();
 
@@ -59,9 +60,18 @@ board.on('ready', () => {
       socket.on('maxValue', max => {
         maxValue = max;
       });
+      socket.on('startWatering', () => {
+        manualWatering = true;
+        pump.high();
+      });
+      socket.on('stopWatering', () => {
+        manualWatering = false;
+        pump.low();
+      });
     });
+    console.log(number);
 
-    if (number <= minValue && !isWatering) {
+    if (number <= minValue && !isWatering && !manualWatering) {
       isWatering = true;
       pump.high();
 
@@ -73,7 +83,7 @@ board.on('ready', () => {
       }, 10000);
     }
 
-    if (number >= maxValue && isWatering) {
+    if (number >= maxValue && isWatering && !manualWatering) {
       isWatering = false;
       pump.low();
     }
