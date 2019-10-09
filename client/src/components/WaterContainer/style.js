@@ -97,3 +97,13 @@ export const Handle = styled(motion.div)`
     background: #000;
   }
 `;
+
+export const WaterArea = styled(motion.div)`
+  background: transparent;
+  width: 65px;
+  height: 100px;
+  align-self: flex-end;
+  z-index: 999999;
+  margin-right: -60%;
+  position: relative;
+`;

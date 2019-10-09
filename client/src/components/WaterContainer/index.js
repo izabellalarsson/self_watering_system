@@ -5,11 +5,17 @@ import {
   Water,
   Wave,
   WrapperHandle,
-  Handle
+  Handle,
+  WaterArea
 } from './style';
 import useHandle from './useHandle';
 
-const WaterContainer = ({ waterLevel, socket }) => {
+const WaterContainer = ({
+  waterLevel,
+  socket,
+  isDraggingCan,
+  setIsWatering
+}) => {
   const maxHandle = useHandle(0, 280);
   const minHandle = useHandle(0, -280);
   const waterLevelAnimation = useSpring('0%');
@@ -25,39 +31,50 @@ const WaterContainer = ({ waterLevel, socket }) => {
   });
 
   return (
-    <StyledWaterContainer>
-      <aside>
-        <Water style={{ y: waterLevelAnimation, x: '-50%' }}>
-          <Wave>
-            <div></div>
-            <div></div>
-          </Wave>
-        </Water>
-      </aside>
-      <Handle
-        drag="y"
-        dragConstraints={{ left: 0, right: 0, top: 0, bottom: 280 }}
-        dragMomentum={false}
-        style={{ y: maxHandle.y }}
-      >
-        <div>
-          <p>Max</p>
-          <p>{maxHandle.value}%</p>
-        </div>
-        <span></span>
-      </Handle>
-      <Handle
-        drag="y"
-        dragConstraints={{ left: 0, right: 0, top: -280, bottom: 0 }}
-        style={{ y: minHandle.y }}
-      >
-        <div>
-          <p>Min</p>
-          <p>{minHandle.value}%</p>
-        </div>
-        <span></span>
-      </Handle>
-    </StyledWaterContainer>
+    <>
+      <div style={{display: 'flex', flexDirection: 'column'}}>
+        <WaterArea
+          onHoverStart={() => {
+            isDraggingCan && setIsWatering(true);
+          }}
+          onHoverEnd={() => setIsWatering(false)}
+        />
+
+        <StyledWaterContainer>
+          <aside>
+            <Water style={{ y: waterLevelAnimation, x: '-50%' }}>
+              <Wave>
+                <div></div>
+                <div></div>
+              </Wave>
+            </Water>
+          </aside>
+          <Handle
+            drag="y"
+            dragConstraints={{ left: 0, right: 0, top: 0, bottom: 280 }}
+            dragMomentum={false}
+            style={{ y: maxHandle.y }}
+          >
+            <div>
+              <p>Max</p>
+              <p>{maxHandle.value}%</p>
+            </div>
+            <span></span>
+          </Handle>
+          <Handle
+            drag="y"
+            dragConstraints={{ left: 0, right: 0, top: -280, bottom: 0 }}
+            style={{ y: minHandle.y }}
+          >
+            <div>
+              <p>Min</p>
+              <p>{minHandle.value}%</p>
+            </div>
+            <span></span>
+          </Handle>
+        </StyledWaterContainer>
+      </div>
+    </>
   );
 };
 
