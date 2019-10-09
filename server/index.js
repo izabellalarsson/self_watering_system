@@ -10,6 +10,8 @@ dotenv.config();
 server.listen(4000);
 let minValue = 30;
 let maxValue = 70;
+let number = 0;
+let manualStartValue = null;
 
 const sendSMS = () => {
   request.post(
@@ -21,8 +23,8 @@ const sendSMS = () => {
       },
       form: {
         from: 'Plantan',
-        to: '+46767860086',
-        message: 'VATTNA MIG'
+        to: process.env.SMS_NUMBER,
+        message: 'I NEED WATER'
       }
     },
     (err, res, body) => {
@@ -47,6 +49,22 @@ board.on('ready', () => {
   let manualWatering = false;
 
   pump.low();
+  let noWaterTimer = null;
+  const handleNoWater = number => {
+    return setTimeout(() => {
+      if (manualWatering) {
+        if (number < manualStartValue + 3) {
+          sendSMS();
+          pump.low();
+        }
+      } else {
+        if (number < minValue + 3) {
+          sendSMS();
+          pump.low();
+        }
+      }
+    }, 1000);
+  };
 
   io.on('connection', socket => {
     socket.emit('defaultMinValue', minValue);
@@ -59,16 +77,19 @@ board.on('ready', () => {
     });
     socket.on('startWatering', () => {
       manualWatering = true;
+      manualStartValue = number;
       pump.high();
+      noWaterTimer = handleNoWater(number);
     });
     socket.on('stopWatering', () => {
       manualWatering = false;
+      clearTimeout(noWaterTimer);
       pump.low();
     });
   });
 
   sensor.on('change', raw => {
-    let number = Math.floor((sensor.value / 1023) * 100);
+    number = Math.floor((sensor.value / 1023) * 100);
     number = 100 - number;
     io.sockets.emit('percent', number);
 
@@ -76,12 +97,8 @@ board.on('ready', () => {
       isWatering = true;
       pump.high();
 
-      setTimeout(() => {
-        if (number < minValue + 3) {
-          sendSMS();
-          pump.low();
-        }
-      }, 10000);
+      clearTimeout(noWaterTimer);
+      noWaterTimer = handleNoWater(number);
     }
 
     if (number >= maxValue && isWatering && !manualWatering) {
