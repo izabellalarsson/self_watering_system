@@ -48,28 +48,29 @@ board.on('ready', () => {
 
   pump.low();
 
+  io.on('connection', socket => {
+    socket.emit('defaultMinValue', minValue);
+    socket.emit('defaultMaxValue', maxValue);
+    socket.on('minValue', min => {
+      minValue = min;
+    });
+    socket.on('maxValue', max => {
+      maxValue = max;
+    });
+    socket.on('startWatering', () => {
+      manualWatering = true;
+      pump.high();
+    });
+    socket.on('stopWatering', () => {
+      manualWatering = false;
+      pump.low();
+    });
+  });
+
   sensor.on('change', raw => {
     let number = Math.floor((sensor.value / 1023) * 100);
     number = 100 - number;
-
     io.sockets.emit('percent', number);
-    io.on('connection', socket => {
-      socket.on('minValue', min => {
-        minValue = min;
-      });
-      socket.on('maxValue', max => {
-        maxValue = max;
-      });
-      socket.on('startWatering', () => {
-        manualWatering = true;
-        pump.high();
-      });
-      socket.on('stopWatering', () => {
-        manualWatering = false;
-        pump.low();
-      });
-    });
-    console.log(number);
 
     if (number <= minValue && !isWatering && !manualWatering) {
       isWatering = true;
@@ -77,7 +78,7 @@ board.on('ready', () => {
 
       setTimeout(() => {
         if (number < minValue + 3) {
-          // sendSMS();
+          sendSMS();
           pump.low();
         }
       }, 10000);

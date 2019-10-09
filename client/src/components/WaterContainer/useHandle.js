@@ -1,7 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { useMotionValue, transform } from "framer-motion";
+import { useState, useEffect } from 'react';
+import { useMotionValue, transform } from 'framer-motion';
 
-const useHandle = (min, max) => {
+const useHandle = (min, max, defaultValue) => {
+  useEffect(() => {
+    const outputRange = [min, max];
+    const inputRange = max < 0 ? [0, 100] : [100, 0];
+    const output = Math.round(transform(defaultValue, inputRange, outputRange));
+    y.set(output);
+  }, [defaultValue]);
+
   const [value, setValue] = useState(max < 0 ? 0 : 100);
   const [rawValue, setRawValue] = useState(null);
   const y = useMotionValue(min);

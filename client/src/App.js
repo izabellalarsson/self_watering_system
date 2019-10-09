@@ -7,10 +7,6 @@ dotenv.config();
 
 const socket = io(process.env.REACT_APP_HOST);
 
-socket.on('connect', () => {
-  console.log('HEJ JU');
-});
-
 const App = () => {
   return (
     <Layout>

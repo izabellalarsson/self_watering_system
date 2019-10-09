@@ -33,10 +33,14 @@ const Index = ({ socket }) => {
     socket.on('percent', data => {
       setWaterLevel(data);
     });
+
+    return () => {
+      socket.removeAllListeners();
+    };
   }, []);
 
   useEffect(() => {
-    if(isWatering) {
+    if (isWatering) {
       socket.emit('startWatering');
     } else {
       socket.emit('stopWatering');
