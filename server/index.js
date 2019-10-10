@@ -63,7 +63,7 @@ board.on('ready', () => {
           pump.low();
         }
       }
-    }, 1000);
+    }, 5000);
   };
 
   io.on('connection', socket => {
